@@ -117,3 +117,22 @@ Feature: Tag files/folders activities
     Then the activity number 1 should have message "You assigned system tag simple to simple-empty-folder" in the activity page
     And the activity number 2 should have a message saying that user "User One" has shared "simple-empty-folder" with you
     And the activity should not have any message with keyword "User Zero"
+
+  Scenario Outline: Adding a tag on a file/folder should not be listed in the activity list stream when system tags activity has been disabled
+    Given user "user0" has been created with default attributes
+    And user "user0" has logged in using the webUI
+    And user "user0" has created a "normal" tag with name "lorem"
+    # <filepath> already has an ending slash('/')
+    And user "user0" has added tag "lorem" to file "<filepath><filename>"
+    And the user has browsed to the personal general settings page
+    When the user disables activity log stream for "systemtags" using the webUI
+    And the user browses to the activity page
+    Then the activity should not have any message with keyword "system tag"
+    Examples:
+      | filepath                            | filename            |
+      | /                                   | lorem.txt           |
+      | simple-folder/                      | testapp.zip         |
+      | /                                   | 0                   |
+      | 'single'quotes/                     | simple-empty-folder |
+      | 0/                                  | lorem.txt           |
+      | 'single'quotes/simple-empty-folder/ | for-git-commit      |
